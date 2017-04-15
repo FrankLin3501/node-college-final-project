@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WiFi Data</title>
+        <link rel="stylesheet" href="/bs/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bs/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/stylesheets/style.css">
+        <script scr="/bs/js/bootstrap.min.js"></script>
+
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-xs-8 col-xs-offset-2">
+                <h1>Welcome <%= username %></h1>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td>UID</td>
+                            <td>SSID</td>
+                            <td>Password</td>
+														<td>Protocol</td>
+                            <td>Lat</td>
+                            <td>Lng</td>
+                        </tr>
+                    </thead>
+                    <% for (var i in rows) {%>
+                        <tr>
+                            <td><%= rows[i].UID %></td>
+                            <td><%= rows[i].ssid %></td>
+                            <td><%= rows[i].password %></td>
+														<td><%= rows[i].protocol %></td>
+                            <td><%= rows[i].lat %></td>
+                            <td><%= rows[i].lng %></td>
+                        </tr>
+                    <% } %>
+                </table>
+                <div id="map" style="width:100%;height:400px;"></div>
+            </div>
+        </div>
+        <script>
+            var map;
+            var markers = [];
+            var data = <%- JSON.stringify(rows) %>;
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: <%= rows[0].lat %>, lng: <%= rows[0].lng %>},
+                    zoom: 16
+                });
+                for (var i in data) {
+                    markers.push(new google.maps.Marker({
+                        position: {lat: data[i].lat, lng: data[i].lng},
+                        title: data[i].ssid
+                    }));
+                    markers[i].setMap(map);
+                }
+                
+            }
+
+        </script>
+          <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMNLCwMbfMRafHhMdsjJbDmZfw3BVN2ts&callback=initMap"
+  type="text/javascript"></script>
+    </body>
+</html>

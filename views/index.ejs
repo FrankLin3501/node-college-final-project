@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="stylesheet" href="/bs/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bs/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/stylesheets/style.css">
+        <script scr="/bs/js/bootstrap.min.js"></script>
+        <script>
+            function login() {
+                document.getElementById('email').value = 'q35010013@gmail.com';
+                document.getElementById('passwd').value = 'Frank5e-1';
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-xs-6 col-xs-offset-3 signin">
+                <form class="form" action="/users/login" method="post">
+                    <div class="form-group">
+                        <label onclick='login()'><h1>Login</h1></label>
+                        <input class="form-control" type="email" name="email" id='email' placeholder="E-Mail" required/></br>
+                        <input class="form-control" type="password" name="password" id="passwd" placeholder="Password" required /></br>
+                        <input class="btn btn-default btn-block" type="submit" value="Submit"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

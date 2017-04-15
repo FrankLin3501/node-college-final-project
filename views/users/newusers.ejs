@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>New User</title>
+        <link rel="stylesheet" href="/bs/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bs/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/stylesheets/style.css">
+        <script scr="/bs/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-xs-6 col-xs-offset-3 signin">
+                <h1>User Register</h1>
+                <form class="form" action="/users/add" method="post">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="fullname" placeholder="Fullname" required/></br>
+                    
+                        <input class="form-control" type="email" name="email" placeholder="E-Mail" required/></br>
+                    
+                        <input class="form-control" type="password" name="password" id="passwd" placeholder="Password" required /></br>
+                    
+                        <input class="form-control" type="password" id="confirm_passwd" placeholder="Confirm" required /></br>
+                    
+                        <input class="btn btn-default btn-block" type="submit" value="Submit"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
