@@ -28,7 +28,7 @@ router.post('/add', function(req, res) {
     }
     result = results;
   });
-
+  
   res.send(result);
 });
 
@@ -42,12 +42,11 @@ router.post('/login', function(req, res) {
     function (error, results, fields) {
       if (error) throw error;
       if (typeof results !== 'undefined') result = results[0];
-      console.log(result);
-      console.log(fields);
+      console.log(result.fullname + '(' + req.body.email + ')]is Login at ' + new Date().toLocaleString('zh-TW', {hour12: false}) + '.');
 
       if (typeof result === 'undefined') {
         res.header('refresh', '1, url=/');
-        res.send('Login Error');       
+        res.send('Login Error');
         
       } else {
         req.session.isLogin = 'yes';

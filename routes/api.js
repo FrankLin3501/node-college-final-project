@@ -13,6 +13,10 @@ router.all('/*', function(req, res, next) {
   next();
 });
 
+router.post('/register', function(req, res, next) {
+  
+});
+
 router.post('/login', function(req, res, next) {
   var result = undefined;
   var sql = 'SELECT `UID`, `fullname` FROM `user` WHERE `email`=? AND `password`=?';
@@ -83,6 +87,9 @@ router.post('/getwifi', function(req, res, next) {
   }
 });
 
+
+
+//function for this routing
 function isLogin(session) {
   return session.isLogin == 'yes';
 }
