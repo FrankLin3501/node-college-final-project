@@ -33,6 +33,10 @@ app.use(session({
 }));
 
 // route configuration
+app.use('/*', function (req, res, next) {
+  console.log(req.ip);
+  next();
+});
 app.use('/', routes);
 app.use('/users', users);
 app.use('/api', api);
