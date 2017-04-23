@@ -24,7 +24,7 @@ router.post('/add', function(req, res) {
 
   connection.query(sql, req.body, function (err, results) {
     if (err) {
-      console.log(err);
+      console.log(err.errno);
       throw err;
     }
     result = results;
