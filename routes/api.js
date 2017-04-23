@@ -13,8 +13,22 @@ router.all('/*', function(req, res, next) {
   next();
 });
 
-router.post('/register', function(req, res, next) {
+router.post('/signup', function(req, res, next) {
+  var result = '';
+  var sql = 'INSERT INTO `user` SET ?';
+
+  req.body.password = md5(req.body.password);
+  console.log(req.body);
+
+  connection.query(sql, req.body, function (err, results) {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+    result = results;
+  });
   
+  res.send(result);
 });
 
 router.post('/login', function(req, res, next) {

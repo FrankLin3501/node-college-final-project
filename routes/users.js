@@ -24,6 +24,7 @@ router.post('/add', function(req, res) {
 
   connection.query(sql, req.body, function (err, results) {
     if (err) {
+      console.log(err);
       throw err;
     }
     result = results;
@@ -42,7 +43,7 @@ router.post('/login', function(req, res) {
     function (error, results, fields) {
       if (error) throw error;
       if (typeof results !== 'undefined') result = results[0];
-      console.log(result.fullname + '(' + req.body.email + ')]is Login at ' + new Date().toLocaleString('zh-TW', {hour12: false}) + '.');
+      console.log(result.fullname + '(' + req.body.email + ')is Login at ' + new Date().toLocaleString('zh-TW', {hour12: false}) + '.');
 
       if (typeof result === 'undefined') {
         res.header('refresh', '1, url=/');
