@@ -33,11 +33,14 @@ router.post('/signup', function(req, res, next) {
         case 1062:
           result = {
             state:  1062,
-            message: '[Error]E-mail already in use.'
+            message: '[Error] E-mail already in use.'
           };
           break;
-        case 1000:
-
+        case 1048:
+          result = {
+            state:  1048,
+            message:  '[Error] Sign up information is incomplete.'
+          }
           break;
         default:
           throw err;
