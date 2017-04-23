@@ -16,9 +16,14 @@ router.all('/*', function(req, res, next) {
 router.post('/signup', function(req, res, next) {
   var result = '';
   var sql = 'INSERT INTO `user` SET ?';
-
+  if (typeof req.body.fullname === 'undefined')
+    req.body.fullname = null;
+  if (typeof req.body.email === 'undefined')
+    req.body.email = null;
+  if (typeof req.body.password === 'undefined')
+    req.body.password = null;
   req.body.password = md5(req.body.password);
-  console.log(req.body);
+  console.log(req.body);  
 
   connection.query(sql, req.body, function (err, results) {
     console.log(results);
@@ -28,8 +33,11 @@ router.post('/signup', function(req, res, next) {
         case 1062:
           result = {
             state:  1062,
-            message: 'E-mail already in use.'
+            message: '[Error]E-mail already in use.'
           };
+          break;
+        case 1000:
+
           break;
         default:
           throw err;
@@ -39,6 +47,7 @@ router.post('/signup', function(req, res, next) {
       if (typeof results !== 'undefined') {
         result = {
           state: 1,
+          message: 'Sign Up Successful.',
           UID: results.insertId
         };
       }
