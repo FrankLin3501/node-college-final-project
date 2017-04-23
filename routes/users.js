@@ -28,17 +28,17 @@ router.post('/add', function(req, res) {
       console.log(err.errno);
       switch (err.errno) {
         case 1062:
-          result = {
-            errno:  '1062',
-            errmsg: 'E-mail already in use.'
-          };
+          result = '<h1>E-mail already in use.</h1>';
           break;
         default:
           throw err;
           break;
       }
     } else {
-      result = results;
+      if (typeof results !== 'undefined') {
+        console.log('New UserID:' + results.insertId + ' is register.');
+        result = '<h1>Register successful.</h1>';
+      }
     }
     res.send(result);  
   });

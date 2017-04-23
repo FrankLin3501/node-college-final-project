@@ -36,7 +36,11 @@ router.post('/signup', function(req, res, next) {
           break;
       }
     } else {
-      result = results;
+      if (typeof results !== 'undefined') {
+        result = {
+          UID: results.insertId
+        };        
+      }
     }
     res.send(result);  
   });
