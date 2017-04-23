@@ -27,7 +27,7 @@ router.post('/signup', function(req, res, next) {
       switch (err.errno) {
         case 1062:
           result = {
-            status:  1062,
+            state:  1062,
             message: 'E-mail already in use.'
           };
           break;
@@ -38,7 +38,7 @@ router.post('/signup', function(req, res, next) {
     } else {
       if (typeof results !== 'undefined') {
         result = {
-          status: 1,
+          state: 1,
           UID: results.insertId
         };
       }
