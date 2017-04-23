@@ -21,14 +21,25 @@ router.post('/signup', function(req, res, next) {
   console.log(req.body);
 
   connection.query(sql, req.body, function (err, results) {
+    console.log(results);
     if (err) {
-      console.log(err);
-      throw err;
+      console.log(err.errno);
+      switch (err.errno) {
+        case 1062:
+          result = {
+            errno:  1062,
+            errmsg: 'E-mail already in use.'
+          };
+          break;
+        default:
+          throw err;
+          break;
+      }
+    } else {
+      result = results;
     }
-    result = results;
+    res.send(result);  
   });
-  
-  res.send(result);
 });
 
 router.post('/login', function(req, res, next) {

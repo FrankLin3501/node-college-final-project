@@ -23,14 +23,25 @@ router.post('/add', function(req, res) {
   console.log(req.body);
 
   connection.query(sql, req.body, function (err, results) {
+    console.log(results);
     if (err) {
       console.log(err.errno);
-      throw err;
+      switch (err.errno) {
+        case 1062:
+          result = {
+            errno:  '1062',
+            errmsg: 'E-mail already in use.'
+          };
+          break;
+        default:
+          throw err;
+          break;
+      }
+    } else {
+      result = results;
     }
-    result = results;
+    res.send(result);  
   });
-  
-  res.send(result);
 });
 
 //login from user
