@@ -16,13 +16,13 @@ router.all('/*', function(req, res, next) {
 router.post('/signup', function(req, res, next) {
   var result = '';
   var sql = 'INSERT INTO `user` SET ?';
+  req.body.password = md5(req.body.password);
   if (typeof req.body.fullname === 'undefined' || req.body.fullname == '')
     req.body.fullname = null;
   if (typeof req.body.email === 'undefined' || req.body.email == '')
     req.body.email = null;
   if (typeof req.body.password === 'undefined' || req.body.password == '')
     req.body.password = null;
-  req.body.password = md5(req.body.password);
   console.log(req.body);  
 
   connection.query(sql, req.body, function (err, results) {
