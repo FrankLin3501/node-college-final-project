@@ -105,15 +105,15 @@ router.post('/login', function(req, res, next) {
 
 router.post('/getwifi', function(req, res, next) {
   var result = undefined;
-  var lat = req.param('lat');
-  var lng = req.param('lng');
-  console.log(req.header);
-  console.log(req.body);
-  console.log('(' + lat + ', ' + lng + ')');
+  var lat = parseFloat(req.param('lat'));
+  var lng = parseFloat(req.param('lng'));
+  var time = parseInt(req.param('time'));
+  var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
   var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
-
   
+  console.log(req.body);
   console.log('Cookies:\t' + req.header('cookie'));
+  console.log('Time:\t' + date);
   if (isLogin(req.session)) {
     connection.query(sql, [], function (err, rows) {
       var result = JSON.stringify({
@@ -121,7 +121,7 @@ router.post('/getwifi', function(req, res, next) {
         wifi: rows.length==0?undefined:rows
       });
 
-      console.log('Body:\t' + result);
+      console.log('Body:\t\t' + result);
       res.send(result);
     });
   } else {
