@@ -107,6 +107,7 @@ router.post('/getwifi', function(req, res, next) {
   var result = undefined;
   var lat = req.param('lat');
   var lng = req.param('lng');
+  console.log(req.body);
   console.log('(' + lat + ', ' + lng + ')');
   var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
 
