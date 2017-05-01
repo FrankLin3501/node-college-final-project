@@ -110,8 +110,8 @@ router.post('/getwifi', function(req, res, next) {
   var time = parseInt(req.param('time'));
   var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
   //var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
-  var sql = 'SELECT *, ROUND( 1000 * 6371 * acos( cos( radians(' + lat + ') ) * cos( radians( `lat` ) ) '+
-                '* cos( radians( `lng` ) - radians(' + lng + ') ) + sin( radians(' + lat + ') ) * sin(radians(`lat`)) ) , 2) AS `distance` '+
+  var sql = ''+
+  'SELECT *, (ROUND( 1000 * 6371 * acos( cos( radians(' + lat + ') ) * cos( radians( `lat` ) ) * cos( radians( `lng` ) - radians(' + lng + ') ) + sin( radians(' + lat + ') ) * sin(radians(`lat`)) ), 2 )) AS `distance` '+
             'FROM `online` '+
             'ORDER BY `distance` ASC';
   console.log(req.body);
