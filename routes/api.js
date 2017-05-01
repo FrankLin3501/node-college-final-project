@@ -110,16 +110,16 @@ router.post('/getwifi', function(req, res, next) {
   var time = parseInt(req.param('time'));
   var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
   //var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
-  var sql = 
-  'SELECT *, ( 1000 * 6371 * acos( cos( radians(' + lat + ') ) * cos( radians( `lat` ) ) '+
-            '* cos( radians( `lng` ) - radians(' + lng + ') ) + sin( radians(' + lat + ') ) * sin(radians(`lat`)) ) ) AS `distance` '+
-  'FROM `online` '+
-  'ORDER BY `distance` ASC';
+  var sql = 'SELECT *, ( 1000 * 6371 * acos( cos( radians(' + lat + ') ) * cos( radians( `lat` ) ) '+
+                '* cos( radians( `lng` ) - radians(' + lng + ') ) + sin( radians(' + lat + ') ) * sin(radians(`lat`)) ) ) AS `distance` '+
+            'FROM `online` '+
+            'ORDER BY `distance` ASC';
   console.log(req.body);
   console.log('Cookies:\t' + req.header('cookie'));
   console.log('Time:\t' + date);
   if (isLogin(req.session)) {
     connection.query(sql, [], function (err, rows) {
+      console.log(rows);
       var result = JSON.stringify({
         hasData: rows.length==0?false:true,
         wifi: rows.length==0?undefined:rows
