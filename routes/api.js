@@ -121,8 +121,8 @@ router.post('/getwifi', function(req, res, next) {
     connection.query(sql, [], function (err, rows) {
       console.log(rows);
       var result = JSON.stringify({
-        hasData: rows.length==0?false:true,
-        wifi: rows.length==0?undefined:rows
+        hasData: (rows==undefined?false:true),
+        wifi: rows
       });
 
       console.log('Body:\t\t' + result);
