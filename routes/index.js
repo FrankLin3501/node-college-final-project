@@ -13,6 +13,7 @@ router.get('/', function(req, res) {
       });
     });
   } else {
+    res.header('refresh: 5;url=""');
     res.render('index');
   }  
 });
