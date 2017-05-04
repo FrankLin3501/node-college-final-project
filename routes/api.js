@@ -107,18 +107,30 @@ router.post('/getwifi', function(req, res, next) {
   var result = undefined;
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
+  var uid = req.param('uid');
   var time = parseInt(req.param('time'));
   var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
+  var where = 'WHERE `UID`=? ';
+  var send = [];
   //var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
+  if (Number.isInteger(uid)) {
+    send = [uid];
+  } else {
+    send = [];
+    where = '';
+  }
   var sql = ''+
   'SELECT *, (ROUND( 1000 * 6371 * acos( cos( radians(' + lat + ') ) * cos( radians( `lat` ) ) * cos( radians( `lng` ) - radians(' + lng + ') ) + sin( radians(' + lat + ') ) * sin(radians(`lat`)) ), 2 )) AS `distance` '+
             'FROM `online` '+
+            where +
             'ORDER BY `distance` ASC';
+
+  
   console.log(req.body);
   console.log('Cookies:\t' + req.header('cookie'));
   console.log('Time:\t' + date);
   if (isLogin(req.session)) {
-    connection.query(sql, [], function (err, rows) {
+    connection.query(sql, send, function (err, rows) {
       console.log(rows);
       var result = JSON.stringify({
         hasData: (rows==undefined?false:true),
