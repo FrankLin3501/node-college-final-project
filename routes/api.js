@@ -113,7 +113,7 @@ router.post('/getwifi', function(req, res, next) {
   var where = 'WHERE `UID`=? ';
   var send = [];
   //var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
-  if (Number.isInteger(uid)) {
+  if (typeof uid === 'number') {
     send = [uid];
   } else {
     send = [];
