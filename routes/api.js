@@ -107,7 +107,7 @@ router.post('/getwifi', function(req, res, next) {
   var result = undefined;
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
-  var uid = req.param('uid');
+  var uid = parseInt(req.param('UID'));
   var time = parseInt(req.param('time'));
   var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
   var where = 'WHERE `UID`=? ';
