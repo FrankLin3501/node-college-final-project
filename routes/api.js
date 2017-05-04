@@ -107,11 +107,12 @@ router.post('/getwifi', function(req, res, next) {
   var result = undefined;
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
-  var uid = parseInt(req.param('UID'));
+  var uid = req.param('UID');
   var time = parseInt(req.param('time'));
   var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
   var where = 'WHERE `UID`=? ';
   var send = [];
+  uid = (typeof uid === 'undefined' ? undefined : parseInt(uid));
   //var sql = 'SELECT * FROM `online` WHERE 1 ORDER BY `UID` ASC';
   if (typeof uid === 'number') {
     send = [uid];
