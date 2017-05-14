@@ -45,7 +45,6 @@ router.post('/signup', function(req, res, next) {
           break;
         default:
           throw err;
-          break;
       }
     } else {
       if (typeof results !== 'undefined') {
@@ -150,6 +149,57 @@ router.post('/getwifi', function(req, res, next) {
   }
 });
 
+router.post('/setwifi', function(req, res, next) {
+  var result = undefined;
+  var lat = parseFloat(req.param('lat'));
+  var lng = parseFloat(req.param('lng'));
+  var email = req.param('email');
+  var uid = req.param('UID');
+  var time = parseInt(req.param('time'));
+  var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
+  var wifi = makeWiFiData(uid, email);
+  var send = {
+    'uid': uid,
+    'lat': lat,
+    'lng': lng,
+    'ssid': ssid,
+    'password': password
+  };
+  var sql = 'INSERT INTO `online` SET ?';
+
+  console.log(req.body);
+  console.log('Cookies:\t' + req.header('cookie'));
+  console.log('Time:\t' + date);
+  if (isLogin(req.session)) {
+    connection.query(sql, send, function (err, rows) {
+      console.log(rows);
+      var result = JSON.stringify({
+        hasData: (rows==undefined?false:true),
+        wifi: rows
+      });
+
+      console.log('Body:\t\t' + result);
+      res.send(result);
+    });
+  } else {
+    result = {
+      hasData: false,
+      wifi: undefined
+    };
+    res.send(result);
+  }
+});
+
+
+function makeWiFiData(uid, email) {
+  var uuid = require('uuid/v4')().toString();
+  var _ssid = 'ID' + uid + '_' + email.toUpperCase();
+  var _password = uuid.replace(/-/gi,'');
+  return {
+    ssid: _ssid,
+    password: _password
+  };
+}
 
 
 //function for this routing
