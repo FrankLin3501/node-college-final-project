@@ -193,7 +193,7 @@ router.post('/setwifi', function(req, res, next) {
 
 function makeWiFiData(uid, email) {
   var uuid = require('uuid/v4')().toString();
-  var _ssid = 'ID' + uid + '_' + email.toUpperCase();
+  var _ssid = 'ID' + uid + '_' + email.split('@')[0].toUpperCase();
   var _password = uuid.replace(/-/gi,'');
   return {
     ssid: _ssid,
