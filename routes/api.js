@@ -157,13 +157,13 @@ router.post('/setwifi', function(req, res, next) {
   var uid = req.param('UID');
   var time = parseInt(req.param('time'));
   var date = new Date(time).toLocaleString('zh-TW', {hour12: false});
-  var wifi = makeWiFiData(uid, email);
+  var _wifi = makeWiFiData(uid, email);
   var send = {
     'uid': uid,
     'lat': lat,
     'lng': lng,
-    'ssid': wifi.ssid,
-    'password': wifi.password
+    'ssid': _wifi.ssid,
+    'password': _wifi.password
   };
   var sql = 'INSERT INTO `online` SET ?';
 
@@ -175,7 +175,7 @@ router.post('/setwifi', function(req, res, next) {
       console.log(rows);
       var result = JSON.stringify({
         hasData: (rows==undefined?false:true),
-        wifi: rows
+        wifi: _wifi
       });
 
       console.log('Body:\t\t' + result);
