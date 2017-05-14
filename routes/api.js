@@ -162,8 +162,8 @@ router.post('/setwifi', function(req, res, next) {
     'uid': uid,
     'lat': lat,
     'lng': lng,
-    'ssid': ssid,
-    'password': password
+    'ssid': wifi.ssid,
+    'password': wifi.password
   };
   var sql = 'INSERT INTO `online` SET ?';
 
