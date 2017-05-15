@@ -178,6 +178,7 @@ router.post('/setwifi', function(req, res, next) {
   console.log('Time:\t' + date);
   if (isLogin(req.session)) {
     connection.query(sql, send, function (err, rows) {
+      console.log(err);
       console.log(rows);
       var result = JSON.stringify({
         hasData: (rows==undefined?false:true),
