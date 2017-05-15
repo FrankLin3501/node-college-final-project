@@ -79,6 +79,7 @@ router.post('/login', function(req, res, next) {
       } else {
         req.session.isLogin = 'yes';
         req.session.userID = req.param('email');
+        req.session.UID = _uid;
         result = {
           isLogin: true,
           uid: _uid,
@@ -92,8 +93,8 @@ router.post('/login', function(req, res, next) {
     if (req.session.userID == req.param('email')) {
       result = {
         isLogin: true,
-        uid: _uid,
-        email: req.param('email')
+        uid: req.session.UID,
+        email: req.session.userID
       };
     } else {
       result = {
