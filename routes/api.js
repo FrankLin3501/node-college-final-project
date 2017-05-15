@@ -72,6 +72,7 @@ router.post('/login', function(req, res, next) {
       if (typeof result === 'undefined') {
         result = {
           isLogin: false,
+          uid: undefined,
           email: undefined
         };      
       } else {
@@ -79,6 +80,7 @@ router.post('/login', function(req, res, next) {
         req.session.userID = req.param('email');
         result = {
           isLogin: true,
+          uid: rows[0].uid,
           email: req.param('email')
         };
       }
@@ -89,11 +91,13 @@ router.post('/login', function(req, res, next) {
     if (req.session.userID == req.param('email')) {
       result = {
         isLogin: true,
+        uid: rows[0].uid,
         email: req.param('email')
       };
     } else {
       result = {
         isLogin: false,
+        uid: undefined,
         email: undefined
       };
     }
