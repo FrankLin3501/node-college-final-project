@@ -68,6 +68,7 @@ router.post('/login', function(req, res, next) {
     connection.query(sql, [req.param('email'), password], function (error, rows, fields) {
       if (error) throw error;
       if (typeof rows !== 'undefined') result = rows[0];
+      var _uid = result.UID;
       console.log('Result:\t' + JSON.stringify(result));
       if (typeof result === 'undefined') {
         result = {
@@ -80,7 +81,7 @@ router.post('/login', function(req, res, next) {
         req.session.userID = req.param('email');
         result = {
           isLogin: true,
-          uid: rows[0].uid,
+          uid: _uid,
           email: req.param('email')
         };
       }
@@ -91,7 +92,7 @@ router.post('/login', function(req, res, next) {
     if (req.session.userID == req.param('email')) {
       result = {
         isLogin: true,
-        uid: rows[0].uid,
+        uid: _uid,
         email: req.param('email')
       };
     } else {
