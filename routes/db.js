@@ -1,15 +1,16 @@
 var mysql = require('mysql2');
+var config = {
+  connectionLimit: 20,
+  host: '163.18.22.94',
+  port: 3306,
+  user: 'node',
+  password: '1qaz2wsx',
+  database: 'wifi'
+};
 
 /* mysql connection and configuration */
 function getConnect() {
-  var connection = mysql.createConnection({
-    host: '163.18.22.94',
-    port: 3306,
-    user: 'node',
-    password: '1qaz2wsx',
-    database: 'wifi'
-  });
-
+  var connection = mysql.createPool(config);
   return connection;
 }
 

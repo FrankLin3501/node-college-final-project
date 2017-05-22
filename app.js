@@ -34,7 +34,7 @@ app.use(session({
 
 // route configuration
 app.use('/*', function (req, res, next) {
-  console.log('Remote IP:\t' + req.ip);
+  console.log('IP\t:\t' + req.ip);
   next();
 });
 app.use('/', routes);
