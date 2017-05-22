@@ -3,14 +3,20 @@ var connection = require('./db.js');
 var md5 = require('md5');
 var router = express.Router();
 
-
-
-/* GET root page. */
+/* root page. */
 router.all('/*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Method", "POST");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Method', 'POST');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+
+  if (req.path != '/login' && !isLogin(req.session)) {
+      //res.json({state: 'falure'});
+      res.json({
+        hasData: false
+      });
+  } else {
+    next();
+  }
 });
 
 router.post('/signup', function(req, res, next) {
@@ -55,7 +61,7 @@ router.post('/signup', function(req, res, next) {
         };
       }
     }
-    res.send(result);  
+    res.json(result);  
   });
 });
 
@@ -63,49 +69,40 @@ router.post('/login', function(req, res, next) {
   var result = undefined;
   var sql = 'SELECT `UID`, `fullname` FROM `user` WHERE `email`=? AND `password`=?';
   var password = md5(req.param('password'));
-  
-  if (!isLogin(req.session)) {
-    connection.query(sql, [req.param('email'), password], function (error, rows, fields) {
-      if (error) throw error;
-      if (typeof rows !== 'undefined') result = rows[0];
-      var _uid = result.UID;
-      console.log('Result:\t' + JSON.stringify(result));
-      if (typeof result === 'undefined') {
-        result = {
-          isLogin: false,
-          uid: undefined,
-          email: undefined
-        };      
-      } else {
-        req.session.isLogin = 'yes';
-        req.session.userID = req.param('email');
-        req.session.UID = _uid;
-        result = {
-          isLogin: true,
-          uid: _uid,
-          email: req.param('email')
-        };
-      }
-      console.log('Session:\t' + req.session.id);
-      res.send(result);
-    });
-  } else {
-    if (req.session.userID == req.param('email')) {
-      result = {
-        isLogin: true,
-        uid: req.session.UID,
-        email: req.session.userID
-      };
-    } else {
+  var _uid = -1;
+  console.log(req.body);
+  connection.query(sql, [req.param('email'), password], function (error, rows, fields) {
+    if (error) throw error;
+    console.log(error);
+    console.log(rows);
+    if (rows.length > 0) {
+      result = rows[0];
+      _uid = result.UID;
+    }
+    console.log('Result:\t' + JSON.stringify(result));
+    if (typeof result === 'undefined') {
       result = {
         isLogin: false,
         uid: undefined,
         email: undefined
       };
+    } else {
+      req.session.isLogin = 'yes';
+      req.session.userID = req.param('email');
+      req.session.UID = _uid;
+      result = {
+        isLogin: true,
+        uid: _uid,
+        email: req.param('email')
+      };
     }
-    
-    res.send(result);
-  }
+    console.log('Session:\t' + req.session.id);
+    res.json(result);
+  });
+});
+
+router.delete('/logout', function(req, res, next){
+  req.session.destroy();  
 });
 
 router.post('/getwifi', function(req, res, next) {
@@ -138,20 +135,20 @@ router.post('/getwifi', function(req, res, next) {
   if (isLogin(req.session)) {
     connection.query(sql, send, function (err, rows) {
       console.log(rows);
-      var result = JSON.stringify({
+      var result = {
         hasData: (rows==undefined?false:true),
         wifi: rows
-      });
+      };
 
-      console.log('Body:\t\t' + result);
-      res.send(result);
+      console.log('Body:\t\t' + JSON.stringify(result));
+      res.json(result);
     });
   } else {
     result = {
       hasData: false,
       wifi: undefined
     };
-    res.send(result);
+    res.json(result);
   }
 });
 
@@ -178,7 +175,7 @@ router.post('/setwifi', function(req, res, next) {
   console.log('Time:\t' + date);
   if (isLogin(req.session)) {
     connection.query(sql, send, function (err, rows) {
-      console.log(err);
+      if (err) console.log(err);
       console.log(rows);
       var result = JSON.stringify({
         hasData: (rows==undefined?false:true),
@@ -193,10 +190,50 @@ router.post('/setwifi', function(req, res, next) {
       hasData: false,
       wifi: undefined
     };
-    res.send(result);
+    res.json(result);
   }
 });
 
+// router.post('/closewifi', function (req, res, next) {
+
+//   if (isLogin(req.session)) {
+//     var uid = req.session.uid;
+    
+//   } else {
+
+//   }
+
+// });
+
+router.patch('/online', function (req, res, next) {
+  var lat = parseFloat(req.param('lat'));
+  var lng = parseFloat(req.param('lng'));
+  var uid = req.session.UID;
+  var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=? WHERE `UID`=?';
+  var send = [lat, lng, uid];
+  var result = {
+    state: 400,
+    updateState: false
+  };
+  for (var i in send) {
+    if (send[i] == undefined || send.length != 3) {
+      res.json(result);
+      break;
+    }
+  }
+  connection.query(sql, send, function (err, rows, fields) {
+    if (err) throw err;
+    
+    if (rows.length != 0) {
+      result = {
+        state: 200,
+        updateState: true
+      };
+      res.json(result);
+    }
+  });
+
+});
 
 function makeWiFiData(uid, email) {
   var uuid = require('uuid/v4')().toString();
