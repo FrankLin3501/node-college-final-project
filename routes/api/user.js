@@ -21,6 +21,7 @@ function checkInput(values, length) {
         bool = false;
     } else {
         for (var i in values) {
+            //console.log(values[i]);
             if (values[i] == '') {
                 bool = false;
                 break;
@@ -30,17 +31,59 @@ function checkInput(values, length) {
     return bool;
 }
 
+function sendResult(error, result, res) {
+    var RESPONSE_LIST = {
+        '200': { message: 'OK' },
+        '201': { message: 'Created' },
+        '204': { message: 'No Content' },
+        '304': { message: 'Not Modified' },
+        '400': { message: 'Bad Request' },
+        '401': { message: 'Unauthorized' },
+        '500': { message: 'Internal Server Error' },
+        '1062': { message: 'ER_DUP_ENTRY' },
+        '': {}
+    };
+    if (error == null) {
+        result.state = 200;
+
+        console.log('Result\t:\t' + JSON.stringify(result));
+    } else {
+        result.state = 500;
+        result.description = 'Unsupported input data.';
+        switch (error.type) {
+            case -1:
+                error.message = 'DATABASE_ERROR';
+                break;
+            case -2:
+                error.message = 'INPUT_ERROR';
+                result.state = 400;
+                result.description = error.desc;
+                break;
+            case -3:
+                error.message = 'USER_NOT_EXIST_ERROR';
+                result.state = 400;
+                result.description = error.desc;
+                break;
+            default:
+                error.message = 'UNKNOW_ERROR';
+
+                break;
+        }
+        console.log('Error\t:\t' + JSON.stringify(error.err));
+        console.log('\t\t[' + error.type + ']' + error.message);
+    }
+    result.message = RESPONSE_LIST[result.state].message;
+    res.json(result);
+}
+
 router.all('/*', function (req, res, next) {
     var pass = true;
     switch (req.method) {
         case 'POST':
             if (req.path == '/login')
                 pass = checkInput([req.param('email'), req.param('password')], 2);
-
-            break;
-        case 'POST':
-            pass = checkInput([req.param('fullname'), req.param('email'), req.param('password')], 3);
-
+            else if (req.path == '/')
+                pass = checkInput([req.param('fullname'), req.param('email'), req.param('password')], 3);
             break;
         case 'DELETE':
             pass = true;
@@ -50,45 +93,32 @@ router.all('/*', function (req, res, next) {
     if (pass) {
         next();
     } else {
-        res.json({
-            state: 400,
-            message: 'Bad Request',
-            description: 'Wrong input'
-        });
+        var error = { type: -2, desc: 'Input data is null or has illegal character.' };
+        sendResult(error, {}, res);
     }
 });
 
 //login
 router.post('/login', function (req, res, next) {
     var sql = 'SELECT `UID`, `email`, `fullname` FROM `user` WHERE `email`=? AND `password`=?';
-    var email = req.param('email');
-    var password = md5(req.param('password'));
-    var values = [email, password];
+    var values = [req.body.email, md5(req.body.password)];
 
-    connection.query(sql, values, function (err, rows, fields) {
-        var result = {
-            isLogin: false,
-            user: undefined
-        };
+    connection.query(sql, values, function (err, rows) {
+        var result = { isLogin: false };
+        var error = null;
+        var row = rows.pop();
 
         if (err) {
-            console.log(err);
-            throw err;
+            error = { type: -1, err: err };
+        } else if (row != undefined) {
+            result.isLogin = req.session.isLogin = true;
+            result.user = req.session.user = row;
+            result.description = "Login Successfully, see node 'user'.";
+            console.log('Session\t:\t' + req.session.id);
+        } else {
+            error = { type: -3 };
         }
-        var row = rows.pop();
-        while (row != undefined) {
-            req.session.isLogin = true;
-            req.session.user = row;
-            result = {
-                isLogin: true,
-                user: row
-            };
-            row = undefined;
-        }
-
-        console.log('Result\t:\t' + JSON.stringify(result));
-        console.log('Session\t:\t' + req.session.id);
-        res.json(result);
+        sendResult(error, result, res);
     });
 });
 
@@ -102,36 +132,31 @@ router.post('/', function (req, res, next) {
         var result = undefined;
         if (err) {
             //console.log(err);
-            switch (err.errno) {
+            result = { state: err.errno, message: err.code };
+            switch (result.state) {
                 case 1062:
-                    result = {
-                        state: 1062,
-                        message: err.code,
-                        description: '[Error] E-mail already in use.'
-                    };
-                //break;
+                    result.description = 'E-mail already in use.';
+                    break;
                 case 1048:
-                    result = {
-                        state: 1048,
-                        message: err.code,
-                        description: '[Error] Sign up information is incomplete.'
-                    };
+                    result.description = 'Sign up information is incomplete.';
                     break;
                 default:
-                //throw err;            
             }
         } else {
-            console.log('Rows\t:\t' + JSON.stringify(rows));            
+            console.log('Rows\t:\t' + JSON.stringify(rows));
             var row = rows;
-            while (row != undefined) {
+            if (row != undefined) {
                 result = {
-                    state: 200,
-                    message: 'OK',
                     description: 'Sign Up Successful.',
-                    UID: row.insertId
+                    user: {
+                        UID: row.insertId,
+                        fullname: req.body.fullname,
+                        email: req.body.email
+                    }
                 };
-                row = undefined;
             }
+            sendResult(null, result, res);
+            return;
         }
 
         console.log('Result\t:\t' + JSON.stringify(result));
