@@ -298,7 +298,7 @@ router.post('/online', function (req, res, next) {
   });
 });
 
-router.delete('/', function (req, res, next) {
+router.delete('/online', function (req, res, next) {
   var uid = req.session.user.uid;
   var sql = 'DELETE FROM `online` WHERE `UID`=?';
   if (req.session.isSharing) {
