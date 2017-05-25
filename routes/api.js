@@ -299,6 +299,7 @@ router.post('/online', function (req, res, next) {
 });
 
 router.delete('/online', function (req, res, next) {
+  console.log('Sharing\t:\t' + req.session.isSharing);
   var uid = req.session.user.uid;
   var sql = 'DELETE FROM `online` WHERE `UID`=?';
   if (req.session.isSharing) {
@@ -348,7 +349,7 @@ router.patch('/online', function (req, res, next) {
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
   var uid = req.session.UID;
-  var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=?, `online_time`=CURRENT_STAMP() WHERE `UID`=?';
+  var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=?, `online_time`=CURRENT_TIMESTAMP() WHERE `UID`=?';
   var values = [lat, lng, uid];
   var result = {
     state: 400,
