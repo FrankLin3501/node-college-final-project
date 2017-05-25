@@ -261,8 +261,8 @@ router.post('/setwifi', function (req, res, next) {
 router.post('/online', function (req, res, next) {
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
-  var email = req.param('email');
-  var uid = req.param('UID');
+  var email = req.session.user.email;
+  var uid = req.session.user.UID;
   var _wifi = makeWiFiData(uid, email);
   var send = {
     'uid': uid,
@@ -300,7 +300,7 @@ router.post('/online', function (req, res, next) {
 
 router.delete('/online', function (req, res, next) {
   console.log('Sharing\t:\t' + req.session.isSharing);
-  var uid = req.session.user.uid;
+  var uid = req.session.user.UID;
   var sql = 'DELETE FROM `online` WHERE `UID`=?';
   if (req.session.isSharing) {
 
@@ -357,7 +357,7 @@ router.patch('/online', function (req, res, next) {
     updateState: false
   };
 
-  console.log(values);
+  console.log(JSON.stringify(values));
   for (var i in values) {
     if (values[i] == undefined || values.length != 3) {
       res.json(result);
@@ -373,7 +373,7 @@ router.patch('/online', function (req, res, next) {
           state: 200,
           updateState: true
         };
-        console.log('Result\t:\t' + result);
+        console.log('Result\t:\t' + JSON.stringify(result));
         res.json(result);
       }
     });
