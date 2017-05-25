@@ -346,6 +346,7 @@ router.delete('/online', function (req, res, next) {
 // });
 
 router.patch('/online', function (req, res, next) {
+
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
   var uid = req.session.UID;
@@ -355,6 +356,8 @@ router.patch('/online', function (req, res, next) {
     state: 400,
     updateState: false
   };
+
+  console.log(values);
   for (var i in values) {
     if (values[i] == undefined || values.length != 3) {
       res.json(result);
@@ -370,6 +373,7 @@ router.patch('/online', function (req, res, next) {
           state: 200,
           updateState: true
         };
+        console.log('Result\t:\t' + result);
         res.json(result);
       }
     });
