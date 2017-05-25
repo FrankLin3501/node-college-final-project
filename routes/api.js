@@ -218,45 +218,6 @@ router.post('/getwifi', function (req, res, next) {
   }
 });
 
-router.post('/setwifi', function (req, res, next) {
-  var result = undefined;
-  var lat = parseFloat(req.param('lat'));
-  var lng = parseFloat(req.param('lng'));
-  var email = req.param('email');
-  var uid = req.param('UID');
-  var time = parseInt(req.param('time'));
-  var date = new Date(time).toLocaleString('zh-TW', { hour12: false });
-  var _wifi = makeWiFiData(uid, email);
-  var send = {
-    'uid': uid,
-    'lat': lat,
-    'lng': lng,
-    'ssid': _wifi.ssid,
-    'password': _wifi.password
-  };
-  var sql = 'INSERT INTO `online` SET ?';
-
-  if (isLogin(req.session)) {
-    connection.query(sql, send, function (err, rows) {
-      if (err) console.log(err);
-      console.log(rows);
-      var result = {
-        hasData: (rows == undefined ? false : true),
-        wifi: _wifi
-      };
-      req.session.isSharing = true;
-      console.log('Body:\t\t' + JSON.stringify(result));
-      res.json(result);
-    });
-  } else {
-    result = {
-      hasData: false,
-      wifi: undefined
-    };
-    res.json(result);
-  }
-});
-
 //origin is '/setwifi'
 router.post('/online', function (req, res, next) {
   var lat = parseFloat(req.param('lat'));
@@ -272,7 +233,7 @@ router.post('/online', function (req, res, next) {
     'password': _wifi.password
   };
   var sql = 'INSERT INTO `online` SET ?';
-
+  console.log('_wifi\t:\t' + _wifi);
   connection.query(sql, send, function (err, rows) {
     var result;
     if (err) {
@@ -303,11 +264,10 @@ router.delete('/online', function (req, res, next) {
   var uid = req.session.user.UID;
   var sql = 'DELETE FROM `online` WHERE `UID`=?';
   if (req.session.isSharing) {
-
     connection.query(sql, [uid], function (err, rows) {
       var result;
       if (err) console.log('Error\t:\t' + JSON.stringify(err));
-      console.log('Result\t:\t' + JSON.stringify(rows));
+      console.log('Rows\t:\t' + JSON.stringify(rows));
       if (rows.length != 0) {
         result = {
           state: 200,
@@ -321,6 +281,7 @@ router.delete('/online', function (req, res, next) {
           description: 'Delete online error.'
         };
       }
+      console.log('Result\t:\t' + JSON.stringify(result));
       res.json(result);
     });
   } else {
@@ -329,7 +290,7 @@ router.delete('/online', function (req, res, next) {
       message: 'Internal Error',
       description: 'Delete online error.'
     };
-
+    console.log('Result\t:\t' + JSON.stringify(result));
     res.json(result);
   }
 });
@@ -349,7 +310,7 @@ router.patch('/online', function (req, res, next) {
 
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
-  var uid = req.session.UID;
+  var uid = req.session.user.UID;
   var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=?, `online_time`=CURRENT_TIMESTAMP() WHERE `UID`=?';
   var values = [lat, lng, uid];
   var result = {
