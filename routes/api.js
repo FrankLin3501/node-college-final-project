@@ -14,167 +14,167 @@ router.all('/*', function (req, res, next) {
   console.log('Time\t:\t' + getDateTime());
   console.log('Receive\t:\t' + JSON.stringify(req.body));
 
-  if (req.path == '/user' && req.method == 'POST') {
+  if (req.path.indexOf('/user') == 0) {
     next();
-  } else if (req.path != '/login' && !isLogin(req.session)) {
-    //res.json({state: 'falure'});
+  } else if (req.path != '/user/login' && !isLogin(req.session)) {
     res.json({
       hasData: false
     });
   } else {
-    if (isLogin(req.session)) {
-      console.log('Cookies\t:\t' + req.header('cookie'));
-      console.log('User\t:\t' + JSON.stringify(req.session.user));
-    }
+    console.log('Cookies\t:\t' + req.header('cookie'));
+    console.log('Session\t:\t' + JSON.stringify(req.session));
+    console.log('User\t:\t' + JSON.stringify(req.session.user));
     next();
   }
+
 });
 
-//signup
-router.post('/signup', function (req, res, next) {
-  var result = '';
-  var sql = 'INSERT INTO `user` SET ?';
-  if (typeof req.body.fullname === 'undefined' || req.body.fullname == '')
-    req.body.fullname = null;
-  if (typeof req.body.email === 'undefined' || req.body.email == '')
-    req.body.email = null;
-  if (typeof req.body.password === 'undefined' || req.body.password == '')
-    req.body.password = null;
-  else
-    req.body.password = md5(req.body.password);
+router.use('/user', require('./api/user.js'));
+// //signup
+// router.post('/signup', function (req, res, next) {
+//   var result = '';
+//   var sql = 'INSERT INTO `user` SET ?';
+//   if (typeof req.body.fullname === 'undefined' || req.body.fullname == '')
+//     req.body.fullname = null;
+//   if (typeof req.body.email === 'undefined' || req.body.email == '')
+//     req.body.email = null;
+//   if (typeof req.body.password === 'undefined' || req.body.password == '')
+//     req.body.password = null;
+//   else
+//     req.body.password = md5(req.body.password);
 
-  connection.query(sql, req.body, function (err, rows) {
-    console.log(rows);
-    if (err) {
-      console.log(err.errno);
-      switch (err.errno) {
-        case 1062:
-          result = {
-            state: 1062,
-            message: '[Error] E-mail already in use.'
-          };
-          break;
-        case 1048:
-          result = {
-            state: 1048,
-            message: '[Error] Sign up information is incomplete.'
-          }
-          break;
-        default:
-          throw err;
-      }
-    } else {
-      if (typeof rows !== 'undefined') {
-        result = {
-          state: 1,
-          message: 'Sign Up Successful.',
-          UID: rows.insertId
-        };
-      }
-    }
-    res.json(result);
-  });
-});
+//   connection.query(sql, req.body, function (err, rows) {
+//     console.log(rows);
+//     if (err) {
+//       console.log(err.errno);
+//       switch (err.errno) {
+//         case 1062:
+//           result = {
+//             state: 1062,
+//             message: '[Error] E-mail already in use.'
+//           };
+//           break;
+//         case 1048:
+//           result = {
+//             state: 1048,
+//             message: '[Error] Sign up information is incomplete.'
+//           }
+//           break;
+//         default:
+//           throw err;
+//       }
+//     } else {
+//       if (typeof rows !== 'undefined') {
+//         result = {
+//           state: 1,
+//           message: 'Sign Up Successful.',
+//           UID: rows.insertId
+//         };
+//       }
+//     }
+//     res.json(result);
+//   });
+// });
 
-//origin is '/signup'
-//add user
-router.post('/user', function (req, res, next) {
-  var sql = 'INSERT INTO `user` SET `fullname`=?, `email`=?, `password`=?';
-  var values = [req.body.fullname, req.body.email, req.body.password];
+// //origin is '/signup'
+// //add user
+// router.post('/user', function (req, res, next) {
+//   var sql = 'INSERT INTO `user` SET `fullname`=?, `email`=?, `password`=?';
+//   var values = [req.body.fullname, req.body.email, req.body.password];
 
-  for (var i in values) {
-    if (typeof values[i] === 'undefined' || values[i] == '') {
-      res.json({
-        state: 400,
-        message: 'Bad Request',
-        description: 'Incorrect input'
-      });
-      return;
-    }
-  }
-  if (values.length == 3) {
-    connection.query(sql, values, function (err, rows) {
-      var result = undefined;
-      if (err) {
-        //console.log(err);
-        switch (err.errno) {
-          case 1062:
-            result = {
-              state: 1062,
-              message: err.code,
-              description: '[Error] E-mail already in use.'
-            };
-            //break;
-          case 1048:
-            result = {
-              state: 1048,
-              message: err.code,
-              description: '[Error] Sign up information is incomplete.'
-            };
-            break;
-          default:
-            //throw err;            
-        }
-      } else {
-        
-        if (rows.length != 0) {
-          result = {
-            state: 200,
-            message: 'OK',
-            description: 'Sign Up Successful.',
-            UID: rows.insertId
-          };
-        } else {
+//   for (var i in values) {
+//     if (typeof values[i] === 'undefined' || values[i] == '') {
+//       res.json({
+//         state: 400,
+//         message: 'Bad Request',
+//         description: 'Incorrect input'
+//       });
+//       return;
+//     }
+//   }
+//   if (values.length == 3) {
+//     connection.query(sql, values, function (err, rows) {
+//       var result = undefined;
+//       if (err) {
+//         //console.log(err);
+//         switch (err.errno) {
+//           case 1062:
+//             result = {
+//               state: 1062,
+//               message: err.code,
+//               description: '[Error] E-mail already in use.'
+//             };
+//             //break;
+//           case 1048:
+//             result = {
+//               state: 1048,
+//               message: err.code,
+//               description: '[Error] Sign up information is incomplete.'
+//             };
+//             break;
+//           default:
+//             //throw err;            
+//         }
+//       } else {
 
-        }
-      }
+//         if (rows.length != 0) {
+//           result = {
+//             state: 200,
+//             message: 'OK',
+//             description: 'Sign Up Successful.',
+//             UID: rows.insertId
+//           };
+//         } else {
 
-      console.log('Result\t:\t' + JSON.stringify(result));
-      res.json(result);
-    });
-  }
-});
+//         }
+//       }
 
-//login
-router.post('/login', function (req, res, next) {
-  var sql = 'SELECT `UID`, `email`, `fullname` FROM `user` WHERE `email`=? AND `password`=?';
-  var email = req.param('email');
-  var password = md5(req.param('password'));
-  var values = [email, password];
+//       console.log('Result\t:\t' + JSON.stringify(result));
+//       res.json(result);
+//     });
+//   }
+// });
 
-  connection.query(sql, values, function (error, rows, fields) {
-    var result;
-    if (error) {
-      console.log(error);
-      throw error;
-    }
-    if (rows.length != 0) {
-      result = rows[0];
-      req.session.isLogin = true;
-      req.session.user = result;
-      req.session.userID = req.param('email');
-      req.session.UID = result.UID;
-      result = {
-        isLogin: true,
-        uid: result.UID,
-        email: req.param('email')
-      };
-    } else {
-      result = {
-        isLogin: false,
-        uid: undefined,
-        email: undefined
-      };
-    }
-    console.log('Result\t:\t' + JSON.stringify(result));
-    console.log('Session\t:\t' + req.session.id);
-    res.json(result);
-  });
-});
+// //login
+// router.post('/login', function (req, res, next) {
+//   var sql = 'SELECT `UID`, `email`, `fullname` FROM `user` WHERE `email`=? AND `password`=?';
+//   var email = req.param('email');
+//   var password = md5(req.param('password'));
+//   var values = [email, password];
 
-router.delete('/logout', function (req, res, next) {
-  req.session.destroy();
-});
+//   connection.query(sql, values, function (error, rows, fields) {
+//     var result;
+//     if (error) {
+//       console.log(error);
+//       throw error;
+//     }
+//     if (rows.length != 0) {
+//       result = rows[0];
+//       req.session.isLogin = true;
+//       req.session.user = result;
+//       req.session.userID = req.param('email');
+//       req.session.UID = result.UID;
+//       result = {
+//         isLogin: true,
+//         uid: result.UID,
+//         email: req.param('email')
+//       };
+//     } else {
+//       result = {
+//         isLogin: false,
+//         uid: undefined,
+//         email: undefined
+//       };
+//     }
+//     console.log('Result\t:\t' + JSON.stringify(result));
+//     console.log('Session\t:\t' + req.session.id);
+//     res.json(result);
+//   });
+// });
+
+// router.delete('/logout', function (req, res, next) {
+//   req.session.destroy();
+// });
 
 //getwifi
 router.post('/getwifi', function (req, res, next) {
@@ -244,7 +244,7 @@ router.post('/setwifi', function (req, res, next) {
         hasData: (rows == undefined ? false : true),
         wifi: _wifi
       };
-      req.session.Sharing = true;
+      req.session.isSharing = true;
       console.log('Body:\t\t' + JSON.stringify(result));
       res.json(result);
     });
@@ -285,17 +285,52 @@ router.post('/online', function (req, res, next) {
         hasData: true,
         wifi: _wifi
       };
-      req.session.Sharing = true;
+      req.session.isSharing = true;
     } else {
       result = {
         hasData: false,
         wifi: undefined
       };
-      req.session.Sharing = false;
+      req.session.isSharing = false;
     }
     console.log('Result\t:\t' + JSON.stringify(result));
     res.json(result);
   });
+});
+
+router.delete('/', function (req, res, next) {
+  var uid = req.session.user.uid;
+  var sql = 'DELETE FROM `online` WHERE `UID`=?';
+  if (req.session.isSharing) {
+
+    connection.query(sql, [uid], function (err, rows) {
+      var result;
+      if (err) console.log('Error\t:\t' + JSON.stringify(err));
+      console.log('Result\t:\t' + JSON.stringify(rows));
+      if (rows.length != 0) {
+        result = {
+          state: 200,
+          message: 'OK',
+          description: 'Delete online successful.'
+        };
+      } else {
+        result = {
+          state: 500,
+          message: 'Internal Error',
+          description: 'Delete online error.'
+        };
+      }
+      res.json(result);
+    });
+  } else {
+    result = {
+      state: 500,
+      message: 'Internal Error',
+      description: 'Delete online error.'
+    };
+
+    res.json(result);
+  }
 });
 
 // router.post('/closewifi', function (req, res, next) {
@@ -313,7 +348,7 @@ router.patch('/online', function (req, res, next) {
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
   var uid = req.session.UID;
-  var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=? WHERE `UID`=?';
+  var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=?, `online_time`=CURRENT_STAMP() WHERE `UID`=?';
   var values = [lat, lng, uid];
   var result = {
     state: 400,
@@ -325,7 +360,7 @@ router.patch('/online', function (req, res, next) {
       break;
     }
   }
-  if (req.session.Sharing) {
+  if (req.session.isSharing) {
     connection.query(sql, values, function (err, rows, fields) {
       if (err) throw err;
 
