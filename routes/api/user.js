@@ -96,7 +96,7 @@ router.post('/login', function (req, res, next) {
 //add user
 router.post('/', function (req, res, next) {
     var sql = 'INSERT INTO `user` SET `fullname`=?, `email`=?, `password`=?';
-    var values = [req.body.fullname, req.body.email, req.body.password];
+    var values = [req.body.fullname, req.body.email, md5(req.body.password)];
 
     connection.query(sql, values, function (err, rows) {
         var result = undefined;
@@ -121,17 +121,17 @@ router.post('/', function (req, res, next) {
                 //throw err;            
             }
         } else {
-            console.log('Rows\t:\t' + JSON.stringify(rows));
-            var row = rows.pop();
+            console.log('Rows\t:\t' + JSON.stringify(rows));            
+            var row = rows;
             while (row != undefined) {
                 result = {
                     state: 200,
                     message: 'OK',
                     description: 'Sign Up Successful.',
-                    UID: rows.insertId
+                    UID: row.insertId
                 };
                 row = undefined;
-            }            
+            }
         }
 
         console.log('Result\t:\t' + JSON.stringify(result));
