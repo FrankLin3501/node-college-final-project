@@ -295,23 +295,12 @@ router.delete('/online', function (req, res, next) {
   }
 });
 
-// router.post('/closewifi', function (req, res, next) {
-
-//   if (isLogin(req.session)) {
-//     var uid = req.session.uid;
-
-//   } else {
-
-//   }
-
-// });
-
 router.patch('/online', function (req, res, next) {
 
   var lat = parseFloat(req.param('lat'));
   var lng = parseFloat(req.param('lng'));
   var uid = req.session.user.UID;
-  var sql = 'UPDATE `wifi`.`online` SET `lat`=?, `lng`=?, `online_time`=CURRENT_TIMESTAMP() WHERE `UID`=?';
+  var sql = 'UPDATE `online` SET `lat`=?, `lng`=?, `online_time`=CURRENT_TIMESTAMP() WHERE `UID`=?';
   var values = [lat, lng, uid];
   var result = {
     state: 400,
@@ -345,7 +334,7 @@ router.patch('/online', function (req, res, next) {
 });
 
 function makeWiFiData(uid, email) {
-  var uuid = require('uuid/v4')().toString();
+  var uuid = require('uuid/v1')().toString();
   var _ssid = 'ID' + uid + '_' + email.split('@')[0].toUpperCase();
   var _password = uuid.replace(/-/gi, '');
   return {
