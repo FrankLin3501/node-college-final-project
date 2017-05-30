@@ -1,6 +1,6 @@
 var mysql = require('mysql2');
 var config = {
-  connectionLimit: 20,
+  connectionLimit: 1024,
   host: '163.18.22.94',
   port: 3306,
   user: 'node',
