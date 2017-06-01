@@ -176,6 +176,13 @@ router.use('/user', require('./api/user.js'));
 //   req.session.destroy();
 // });
 
+/**
+ *  dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2 
+    c = 2 * atan2( sqrt(a), sqrt(1-a) ) 
+    d = R * c (where R is the radius of the Earth)
+ */
 //getwifi
 router.post('/getwifi', function (req, res, next) {
   var result = undefined;
@@ -205,6 +212,14 @@ router.post('/getwifi', function (req, res, next) {
         hasData: (rows == undefined ? false : true),
         wifi: rows
       };
+
+      for (var i in result.wifi) {
+        var lat2 = result.wifi[i].lat;
+        var lng2 = result.wifi[i].lng;
+        var distance = getDistance(lat, lng, lat2, lng2);
+        result.wifi[i].distance = distance;
+
+      }
 
       console.log('Result\t:\t' + JSON.stringify(result));
       res.json(result);
@@ -355,6 +370,17 @@ function getDateTime() {
 //function for this routing
 function isLogin(session) {
   return session.isLogin == true;
+}
+
+
+function getDistance(lat1, lng1, lat2, lng2) {
+  var dlat = lat2 - lat1;
+  var dlng = lng2 - lng2;
+  var a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2;
+  var c = 2 * atan2( sqrt(a), sqrt(1-a) );
+  var d = 6373 * c;
+
+  return d * 1000;
 }
 
 module.exports = router;
