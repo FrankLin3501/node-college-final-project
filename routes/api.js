@@ -186,8 +186,8 @@ router.use('/user', require('./api/user.js'));
 //getwifi
 router.post('/getwifi', function (req, res, next) {
   var result = undefined;
-  var lat = parseFloat(req.param('lat'));
-  var lng = parseFloat(req.param('lng'));
+  // var lat = parseFloat(req.param('lat'));
+  // var lng = parseFloat(req.param('lng'));
   var uid = req.param('UID');
   var where = 'WHERE `UID`=? ';
   var send = [];
@@ -215,13 +215,13 @@ router.post('/getwifi', function (req, res, next) {
         wifi: rows
       };
 
-      for (var i in result.wifi) {
-        var lat2 = result.wifi[i].lat;
-        var lng2 = result.wifi[i].lng;
-        var distance = getDistance(lat, lng, lat2, lng2);
-        result.wifi[i].distance = distance;
+      // for (var i in result.wifi) {
+      //   var lat2 = result.wifi[i].lat;
+      //   var lng2 = result.wifi[i].lng;
+      //   var distance = getDistance(lat, lng, lat2, lng2);
+      //   result.wifi[i].distance = distance;
 
-      }
+      // }
 
       console.log('Result\t:\t' + JSON.stringify(result));
       res.json(result);
@@ -376,18 +376,59 @@ function isLogin(session) {
 
 
 function getDistance(lat1, lng1, lat2, lng2) {
-  var dlat = lat2 - lat1;
-  var dlng = lng2 - lng1;
+  var dlat = FloatSub(lat2, lat1);
+  var dlng = FloatSub(lng2, lng1);
   console.log('DLat\t:\t' + dlat);
   console.log('DLng\t:\t' + dlng);
-  var a = (Math.sin(dlat/2))^2 + Math.cos(lat1) * Math.cos(lat2) * (Math.sin(dlng/2))^2;
+  var a = FloatAdd((Math.sin( FloatDiv(dlat, 2) ))^2, FloatMul( FloatMul(Math.cos(lat1), Math.cos(lat2)), (Math.sin( FloatDiv(dlng, 2) ))^2));
   console.log(a);
-  var c = 2.0 * Math.atan2( Math.sqrt(a), Math.sqrt(1-a) );
+  var c = FloatMul( Math.atan2( Math.sqrt(a), Math.sqrt(FloatSub(1, a)) ), 2);
   console.log(c);
-  var d = 6373.0 * c;
+  var d = FloatMul(6373.0, c);
   console.log(d);
 
-  return d * 1000.0;
+  return FloatMul(d, 1000);
+}
+
+//浮點數相加
+function FloatAdd(arg1, arg2)
+{
+  var r1, r2, m;
+  try { r1 = arg1.toString().split(".")[1].length; } catch (e) { r1 = 0; }
+  try { r2 = arg2.toString().split(".")[1].length; } catch (e) { r2 = 0; }
+  m = Math.pow(10, Math.max(r1, r2));
+  return (FloatMul(arg1, m) + FloatMul(arg2, m)) / m;
+}
+//浮點數相減
+function FloatSub(arg1, arg2)
+{
+  var r1, r2, m, n;
+  try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+  try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+  m = Math.pow(10, Math.max(r1, r2));
+  n = (r1 >= r2) ? r1 : r2;
+  return ((arg1 * m - arg2 * m) / m).toFixed(n);
+}
+//浮點數相乘
+function FloatMul(arg1, arg2)
+{
+  var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+  try { m += s1.split(".")[1].length; } catch (e) { }
+  try { m += s2.split(".")[1].length; } catch (e) { }
+  return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+}
+//浮點數相除
+function FloatDiv(arg1, arg2)
+{
+  var t1 = 0, t2 = 0, r1, r2;
+  try { t1 = arg1.toString().split(".")[1].length } catch (e) { }
+  try { t2 = arg2.toString().split(".")[1].length } catch (e) { }
+  with (Math)
+  {
+    r1 = Number(arg1.toString().replace(".", ""))
+    r2 = Number(arg2.toString().replace(".", ""))
+    return (r1 / r2) * pow(10, t2 - t1);
+  }
 }
 
 module.exports = router;
