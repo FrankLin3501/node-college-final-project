@@ -376,12 +376,16 @@ function isLogin(session) {
 function getDistance(lat1, lng1, lat2, lng2) {
   var dlat = lat2 - lat1;
   var dlng = lng2 - lng2;
-  
+  console.log('DLat\t:\t' + dlat);
+  console.log('DLng\t:\t' + dlng);
   var a = (Math.sin(dlat/2))^2 + Math.cos(lat1) * Math.cos(lat2) * (Math.sin(dlng/2))^2;
-  var c = 2 * Math.atan2( Math.sqrt(a), Math.sqrt(1-a) );
-  var d = 6373 * c;
+  console.log(a);
+  var c = 2.0 * Math.atan2( Math.sqrt(a), Math.sqrt(1-a) );
+  console.log(c);
+  var d = 6373.0 * c;
+  console.log(d);
 
-  return d * 1000;
+  return d * 1000.0;
 }
 
 module.exports = router;
