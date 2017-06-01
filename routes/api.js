@@ -205,6 +205,8 @@ router.post('/getwifi', function (req, res, next) {
     where +
     'ORDER BY `distance` ASC';
 
+  console.log('Lat\t:\t' + lat);
+  console.log('Lng\t:\t' + lng);
   if (isLogin(req.session)) {
     connection.query(sql, send, function (err, rows) {
       //console.log(rows);
