@@ -382,7 +382,7 @@ function getDistance(lat1, lng1, lat2, lng2) {
   console.log('DLng\t:\t' + dlng);
   var a = FloatAdd((Math.sin( FloatDiv(dlat, 2) ))^2, FloatMul( FloatMul(Math.cos(lat1), Math.cos(lat2)), (Math.sin( FloatDiv(dlng, 2) ))^2));
   console.log(a);
-  var c = FloatMul( Math.atan2( Math.sqrt(a), Math.sqrt(FloatSub(1, a)) ), 2);
+  var c = FloatMul( Math.atan2( Math.sqrt(a), Math.sqrt(FloatSub(a, 1)) ), 2);
   console.log(c);
   var d = FloatMul(6373.0, c);
   console.log(d);
