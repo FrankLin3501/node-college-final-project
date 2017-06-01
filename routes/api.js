@@ -186,8 +186,8 @@ router.use('/user', require('./api/user.js'));
 //getwifi
 router.post('/getwifi', function (req, res, next) {
   var result = undefined;
-  // var lat = parseFloat(req.param('lat'));
-  // var lng = parseFloat(req.param('lng'));
+  var lat = parseFloat(req.param('lat'));
+  var lng = parseFloat(req.param('lng'));
   var uid = req.param('UID');
   var where = 'WHERE `UID`=? ';
   var send = [];
@@ -215,13 +215,13 @@ router.post('/getwifi', function (req, res, next) {
         wifi: rows
       };
 
-      // for (var i in result.wifi) {
-      //   var lat2 = result.wifi[i].lat;
-      //   var lng2 = result.wifi[i].lng;
-      //   var distance = getDistance(lat, lng, lat2, lng2);
-      //   result.wifi[i].distance = distance;
+      for (var i in result.wifi) {
+        var lat2 = result.wifi[i].lat;
+        var lng2 = result.wifi[i].lng;
+        var distance = getDistance(lat, lng, lat2, lng2);
+        result.wifi[i].distance = distance;
 
-      // }
+      }
 
       console.log('Result\t:\t' + JSON.stringify(result));
       res.json(result);
