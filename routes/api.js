@@ -375,60 +375,19 @@ function isLogin(session) {
 }
 
 
-function getDistance(lat1, lng1, lat2, lng2) {
-  var dlat = FloatSub(lat2, lat1);
-  var dlng = FloatSub(lng2, lng1);
-  console.log('DLat\t:\t' + dlat);
-  console.log('DLng\t:\t' + dlng);
-  var a = FloatAdd((Math.sin( FloatDiv(dlat, 2) ))^2, FloatMul( FloatMul(Math.cos(lat1), Math.cos(lat2)), (Math.sin( FloatDiv(dlng, 2) ))^2));
-  console.log(a);
-  var c = FloatMul( Math.atan2( Math.sqrt(a), Math.sqrt(FloatSub(a, 1)) ), 2);
-  console.log(c);
-  var d = FloatMul(6373.0, c);
-  console.log(d);
-
-  return FloatMul(d, 1000);
+function getDistance(lat1, lon1, lat2, lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    ;
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c * 1000; // Distance in km
+  return d;
 }
 
-//浮點數相加
-function FloatAdd(arg1, arg2)
-{
-  var r1, r2, m;
-  try { r1 = arg1.toString().split(".")[1].length; } catch (e) { r1 = 0; }
-  try { r2 = arg2.toString().split(".")[1].length; } catch (e) { r2 = 0; }
-  m = Math.pow(10, Math.max(r1, r2));
-  return (FloatMul(arg1, m) + FloatMul(arg2, m)) / m;
-}
-//浮點數相減
-function FloatSub(arg1, arg2)
-{
-  var r1, r2, m, n;
-  try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
-  try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
-  m = Math.pow(10, Math.max(r1, r2));
-  n = (r1 >= r2) ? r1 : r2;
-  return ((arg1 * m - arg2 * m) / m).toFixed(n);
-}
-//浮點數相乘
-function FloatMul(arg1, arg2)
-{
-  var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
-  try { m += s1.split(".")[1].length; } catch (e) { }
-  try { m += s2.split(".")[1].length; } catch (e) { }
-  return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
-}
-//浮點數相除
-function FloatDiv(arg1, arg2)
-{
-  var t1 = 0, t2 = 0, r1, r2;
-  try { t1 = arg1.toString().split(".")[1].length } catch (e) { }
-  try { t2 = arg2.toString().split(".")[1].length } catch (e) { }
-  with (Math)
-  {
-    r1 = Number(arg1.toString().replace(".", ""))
-    r2 = Number(arg2.toString().replace(".", ""))
-    return (r1 / r2) * pow(10, t2 - t1);
-  }
-}
 
 module.exports = router;
