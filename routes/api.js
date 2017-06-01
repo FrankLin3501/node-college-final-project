@@ -375,7 +375,7 @@ function isLogin(session) {
 
 function getDistance(lat1, lng1, lat2, lng2) {
   var dlat = lat2 - lat1;
-  var dlng = lng2 - lng2;
+  var dlng = lng2 - lng1;
   console.log('DLat\t:\t' + dlat);
   console.log('DLng\t:\t' + dlng);
   var a = (Math.sin(dlat/2))^2 + Math.cos(lat1) * Math.cos(lat2) * (Math.sin(dlng/2))^2;
