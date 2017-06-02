@@ -374,7 +374,6 @@ function isLogin(session) {
   return session.isLogin == true;
 }
 
-
 function getDistance(lat1, lon1, lat2, lon2) {
   var R = 6371; // Radius of the earth in km
   var dLat = deg2rad(lat2 - lat1);  // deg2rad below
@@ -389,5 +388,8 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return d;
 }
 
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
 
 module.exports = router;
