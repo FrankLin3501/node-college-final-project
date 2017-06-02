@@ -204,9 +204,7 @@ router.post('/getwifi', function (req, res, next) {
     'FROM `online` ' +
     where +
     'ORDER BY `distance` ASC';
-
-  console.log('Lat\t:\t' + lat);
-  console.log('Lng\t:\t' + lng);
+    
   if (isLogin(req.session)) {
     connection.query(sql, send, function (err, rows) {
       //console.log(rows);
@@ -219,6 +217,7 @@ router.post('/getwifi', function (req, res, next) {
         var lat2 = result.wifi[i].lat;
         var lng2 = result.wifi[i].lng;
         var distance = getDistance(lat, lng, lat2, lng2);
+        result.wifi[i].distance2 = result.wifi[i].distance;
         result.wifi[i].distance = distance;
 
       }
