@@ -204,7 +204,7 @@ router.post('/getwifi', function (req, res, next) {
     'FROM `online` ' +
     where +
     'ORDER BY `distance` ASC';
-    
+
   if (isLogin(req.session)) {
     connection.query(sql, send, function (err, rows) {
       //console.log(rows);
@@ -384,7 +384,8 @@ function getDistance(lat1, lon1, lat2, lon2) {
     ;
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var d = R * c * 1000; // Distance in km
-  return d;
+  
+  return Math.round(d*100.0)/100.0;
 }
 
 function deg2rad(deg) {
